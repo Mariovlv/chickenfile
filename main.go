@@ -17,7 +17,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
 func init() {
@@ -114,13 +113,10 @@ func download(c echo.Context) error {
 func main() {
 	e := echo.New()
 
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
-
 	e.Static("/", "public")
 
 	e.POST("/upload", upload)
 	e.POST("/download", download)
 
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Start(":8080")
 }
