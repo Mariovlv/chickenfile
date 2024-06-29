@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"chickenfile/client"
 	"context"
 	"crypto/hmac"
@@ -20,13 +19,23 @@ import (
 )
 
 func init() {
-	if os.Getenv("ENV") == "development" {
-		err := godotenv.Load()
-		if err != nil {
-			log.Fatal("Error loading .env file")
-		}
+	err := godotenv.Load()
+
+	if err != nil {
+		log.Fatal("Error loading .env file:", err)
 	}
 
+	fmt.Println("Checking ENV variable:", os.Getenv("ENV"))
+
+	if os.Getenv("ENV") == "development" {
+		fmt.Println("Loading .env file...")
+
+		fmt.Println(".env file loaded successfully.")
+	} else {
+		fmt.Println("Not in development mode.")
+	}
+
+	fmt.Println("Initialization completed.")
 	client.InitializeS3Client()
 }
 
@@ -59,11 +68,13 @@ func upload(c echo.Context) error {
 	uploader := manager.NewUploader(client)
 
 	bucketName := os.Getenv("AWS_BUCKET_NAME")
+	log.Printf("AWS_BUCKET_NAME: %s", bucketName)
 	if bucketName == "" {
 		return echo.NewHTTPError(http.StatusInternalServerError, "AWS_BUCKET_NAME not set in environment")
 	}
 
 	secretWord := os.Getenv("SECRET_WORD")
+	log.Printf("SECRET_WORD: %s", secretWord)
 	if secretWord == "" {
 		return echo.NewHTTPError(http.StatusInternalServerError, "SECRET_WORD not set in environment")
 	}
@@ -72,8 +83,11 @@ func upload(c echo.Context) error {
 
 	result, err := uploader.Upload(context.TODO(), &s3.PutObjectInput{
 		Bucket: aws.String(bucketName),
-		Key:    aws.String(keyForAWS),
-		Body:   src,
+		Key:    aws.String(file.Filename),
+		Metadata: map[string]string{
+			"hash": keyForAWS,
+		},
+		Body: src,
 	})
 
 	if err != nil {
@@ -85,29 +99,49 @@ func upload(c echo.Context) error {
 
 func download(c echo.Context) error {
 	bodyWord := c.FormValue("word")
-
 	key := generateHMAC(bodyWord, os.Getenv("SECRET_WORD"))
-
 	client := client.GetS3Client()
-
 	bucketName := os.Getenv("AWS_BUCKET_NAME")
-	output, err := client.GetObject(context.TODO(), &s3.GetObjectInput{
+
+	resp, err := client.ListObjectsV2(context.TODO(), &s3.ListObjectsV2Input{
 		Bucket: aws.String(bucketName),
-		Key:    aws.String(key),
 	})
-
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to list object in S3 bucket")
-	}
-	defer output.Body.Close()
-
-	buf := new(bytes.Buffer)
-	_, err = buf.ReadFrom(output.Body)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to read file content")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to list objects in S3 bucket")
 	}
 
-	return c.Blob(http.StatusOK, *output.ContentType, buf.Bytes())
+	var matchedObjectKey string
+	for _, item := range resp.Contents {
+		headResp, err := client.HeadObject(context.TODO(), &s3.HeadObjectInput{
+			Bucket: aws.String(bucketName),
+			Key:    item.Key,
+		})
+		if err != nil {
+			continue
+		}
+		if headResp.Metadata["hash"] == key {
+			matchedObjectKey = aws.ToString(item.Key)
+			break
+		}
+	}
+
+	if matchedObjectKey == "" {
+		return echo.NewHTTPError(http.StatusNotFound, "File not found")
+	}
+
+	getObjectOutput, err := client.GetObject(context.TODO(), &s3.GetObjectInput{
+		Bucket: aws.String(bucketName),
+		Key:    aws.String(matchedObjectKey),
+	})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get object from S3 bucket")
+	}
+	defer getObjectOutput.Body.Close()
+
+	c.Response().Header().Set(echo.HeaderContentDisposition, fmt.Sprintf("attachment; filename=%q", matchedObjectKey))
+	c.Response().Header().Set(echo.HeaderContentType, aws.ToString(getObjectOutput.ContentType))
+
+	return c.Stream(http.StatusOK, aws.ToString(getObjectOutput.ContentType), getObjectOutput.Body)
 }
 
 func main() {
