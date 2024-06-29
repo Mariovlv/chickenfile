@@ -2,20 +2,63 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Single file upload</title>
+    <title>Single File Upload</title>
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body>
-    <h1>Upload single file with fields</h1>
+    <main
+      class="grid sm:grid-cols-2 grid-cols-1 items-center justify-center h-screen bg-gray-100"
+    >
+      <section class="flex flex-col justify-center items-center h-full p-6">
+        <h2 class="text-2xl font-semibold mb-4">Upload File</h2>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+          <label for="keyword">Key Word or hash:</label><br />
+          <input
+            class="mt-1 block w-full px-3 py-2 border-b-2 border-white focus:outline-none focus:border-blue-300 sm:text-sm text-blue-500"
+            type="text"
+            id="keyword"
+            name="keyword"
+            required
+          />
+          <br />
 
-    <form action="/upload" method="post" enctype="multipart/form-data">
-      Name: <input type="text" name="name" /><br />
-      Email: <input type="email" name="email" /><br />
-      Files: <input type="file" name="file" /><br /><br />
-      <input type="submit" value="Submit" />
-    </form>
-    <br />
-    <form action="/download" method="post">
-      Secret Word: <input type="text" name="word" /><br />
-    </form>
+          <label for="file">Files:</label><br />
+          <input type="file" id="file" name="file" required /><br /><br />
+
+          <button
+            type="submit"
+            class="mt-4 w-full bg-white text-blue-500 py-2 px-4 border border-transparent rounded-md shadow-sm hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-100"
+            value="Submit"
+          >
+            Submit
+          </button>
+        </form>
+      </section>
+
+      <section
+        class="flex flex-col items-center justify-center text-white bg-blue-500 h-full p-6"
+      >
+        <h2 class="text-2xl font-semibold mb-4">Download File</h2>
+        <form action="/download" method="post">
+          <div>
+            <label for="word" class="block text-gray-100">Secret Word:</label>
+            <input
+              type="text"
+              id="word"
+              name="word"
+              required
+              class="mt-1 block w-full px-3 py-2 border-b-2 border-white focus:outline-none focus:border-blue-300 sm:text-sm text-blue-500"
+            />
+          </div>
+
+          <button
+            type="submit"
+            class="mt-4 w-full bg-white text-blue-500 py-2 px-4 border border-transparent rounded-md shadow-sm hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-100"
+          >
+            Get Download Link
+          </button>
+        </form>
+      </section>
+    </main>
   </body>
 </html>
