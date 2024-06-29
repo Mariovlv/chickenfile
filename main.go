@@ -118,5 +118,13 @@ func main() {
 	e.POST("/upload", upload)
 	e.POST("/download", download)
 
-	e.Start(":8080")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	log.Printf("Starting server on port %s", port)
+	if err := e.Start(":" + port); err != nil {
+		log.Fatal(err)
+	}
 }
