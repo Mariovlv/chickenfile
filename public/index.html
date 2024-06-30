@@ -5,17 +5,31 @@
     <title>Single File Upload</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" type="image/x-icon" href="./favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      .font-inter {
+        font-family: "Inter";
+      }
+      .font-roboto {
+        font-family: "Roboto Mono";
+      }
+    </style>
   </head>
   <body>
     <main
-      class="grid sm:grid-cols-2 grid-cols-1 items-center justify-center h-screen bg-gray-100"
+      class="grid sm:grid-cols-2 grid-cols-1 items-center justify-center h-screen bg-gray-100 font-inter sm:font-md font-sm"
     >
       <section class="flex flex-col justify-center items-center h-full p-6">
         <h2 class="text-2xl font-semibold mb-4">Upload File</h2>
         <form action="/upload" method="post" enctype="multipart/form-data">
           <label for="keyword">Key Word or hash:</label><br />
           <input
-            class="mt-1 block w-full px-3 py-2 border-b-2 border-white focus:outline-none focus:border-blue-300 sm:text-sm text-blue-500"
+            class="mt-1 block w-full px-3 py-2 border-b-2 border-white focus:outline-none bg-blue-500 text-white :border-blue-300 text-blue-500 font-roboto"
             type="text"
             id="keyword"
             name="keyword"
@@ -28,7 +42,7 @@
 
           <button
             type="submit"
-            class="mt-4 w-full bg-white text-blue-500 py-2 px-4 border border-transparent rounded-md shadow-sm hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-100"
+            class="mt-4 w-full bg-blue-500 text-gray-100 py-2 px-4 border border-transparent rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-100"
             value="Submit"
           >
             Submit
@@ -36,29 +50,30 @@
         </form>
       </section>
 
-      <section
-        class="flex flex-col items-center justify-center text-white bg-blue-500 h-full p-6"
-      >
-        <h2 class="text-2xl font-semibold mb-4">Download File</h2>
-        <form action="/download" method="post">
-          <div>
-            <label for="word" class="block text-gray-100">Secret Word:</label>
-            <input
-              type="text"
-              id="word"
-              name="word"
-              required
-              class="mt-1 block w-full px-3 py-2 border-b-2 border-white focus:outline-none focus:border-blue-300 sm:text-sm text-blue-500"
-            />
-          </div>
-
-          <button
-            type="submit"
-            class="mt-4 w-full bg-white text-blue-500 py-2 px-4 border border-transparent rounded-md shadow-sm hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-100"
-          >
-            Get Download Link
-          </button>
-        </form>
+      <section class="flex items-center justify-center bg-gray-100 h-full">
+        <div
+          class="flex flex-col items-center justify-center bg-blue-500 m-[10%] w-[80%] h-[80%] rounded-lg"
+        >
+          <h2 class="text-2xl font-semibold mb-4 text-white">Download File</h2>
+          <form action="/download" method="post">
+            <div>
+              <label for="word" class="block text-gray-100">Secret Word:</label>
+              <input
+                type="text"
+                id="word"
+                name="word"
+                required
+                class="mt-1 block w-full px-3 py-2 border-b-2 border-white focus:outline-none bg-gray-100 focus:border-blue-300 sm:text-sm text-blue-500"
+              />
+            </div>
+            <button
+              type="submit"
+              class="mt-4 w-full bg-white text-blue-500 py-2 px-4 border border-transparent rounded-md shadow-sm hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-100"
+            >
+              Get Download Link
+            </button>
+          </form>
+        </div>
       </section>
     </main>
   </body>
