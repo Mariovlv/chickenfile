@@ -8,14 +8,15 @@ import (
 	"log"
 	"os"
 
-	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 )
 
 func init() {
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("Error loading .env file, maybe in production enviroment:", err)
-	}
+	/*
+		if err := godotenv.Load(); err != nil {
+			log.Fatal("Error loading .env file, maybe in production enviroment:", err)
+		}
+	*/
 
 	fmt.Println("Initialization completed.")
 	client.InitializeS3Client()
