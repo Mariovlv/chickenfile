@@ -13,6 +13,7 @@ import (
 
 func init() {
 	/*
+ 		Change this is for production or development
 		if err := godotenv.Load(); err != nil {
 			log.Fatal("Error loading .env file, maybe in production enviroment:", err)
 		}
