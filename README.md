@@ -2,6 +2,7 @@
 
 This project is a Go-based backend application that allows users to upload files without authentication. Each file is associated with a secret word or hash, which can be shared with other users for secure access to the file. Files are stored in AWS S3.
 
+![Screenshot from 2024-07-13 22-04-03](https://github.com/user-attachments/assets/e58d80a2-7581-4e54-a80e-b703484454f2)
 ## Features
 
 - Upload files without authentication
